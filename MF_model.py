@@ -278,7 +278,7 @@ class TimeAwareMF(object):
         M, N = sparse_check_in_matrices[0].shape
 
         if load_sigma:
-            sigma = self.load_sigma("./tmp/")
+            sigma = self.load_sigma("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\VSC_project_test_jaccard\\sigma")
         else:
             sigma = self.init_sigma(C, M, T)
             np.save("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\tmp\\sigma", sigma)
@@ -327,6 +327,7 @@ class TimeAwareMF(object):
 import time
 import numpy as np
 from collections import defaultdict
+import pickle
 
 
 class FriendBasedCF(object):
@@ -339,24 +340,28 @@ class FriendBasedCF(object):
         ctime = time.time()
         print("Precomputing similarity between friends...", )
         self.check_in_matrix = check_in_matrix
+
         for uid in range(len(social_matrix)) :
             for fid in range(len(social_matrix [uid])):
                 if uid < fid:
+
                     u_social_neighbors = set(social_matrix [uid])
                     f_social_neighbors = set(social_matrix [fid])
                     jaccard_friend = (1.0 * len(u_social_neighbors.intersection(f_social_neighbors)) /
-                                      len(u_social_neighbors.union(f_social_neighbors)))
+                                    len(u_social_neighbors.union(f_social_neighbors)))
 
                     u_check_in_neighbors = set(check_in_matrix[uid, :].nonzero()[0])
                     f_check_in_neighbors = set(check_in_matrix[fid, :].nonzero()[0])
+
                     if len(u_check_in_neighbors.union(f_check_in_neighbors)) == 0:
                         jaccard_check_in = 0
                     else:
                         jaccard_check_in = (1.0 * len(u_check_in_neighbors.intersection(f_check_in_neighbors)) /
-                                            len(u_check_in_neighbors.union(f_check_in_neighbors)))
+                                        len(u_check_in_neighbors.union(f_check_in_neighbors)))
 
                     if jaccard_friend > 0 and jaccard_check_in > 0:
                         self.social_proximity[uid].append([fid, jaccard_friend, jaccard_check_in])
+
         print("Done. Elapsed time:", time.time() - ctime, "s")
 
     def predict(self, i, j):
@@ -365,6 +370,7 @@ class FriendBasedCF(object):
                                 for k, jf, jc in self.social_proximity[i]])
             return numerator
         return 0.0
+
 
 "Metrics"
 
@@ -532,6 +538,7 @@ def main():
     social_matrix = read_friend_data()
 
     start_time = time.time()
+    save_social_proximity = False
 
   
 
@@ -543,20 +550,28 @@ def main():
 
     TAMF.train(sparse_training_matrices, max_iters=30, load_sigma=False)
 
-    S.compute_friend_sim(training_matrix2, social_matrix)
+    if save_social_proximity:
 
-    
+        S.compute_friend_sim(training_matrix2, social_matrix)
+        with open('social_proximity.pkl', 'wb') as file:
+            pickle.dump(S.social_proximity, file)
+
+    else:
+        with open('social_proximity.pkl', 'rb') as file:
+            S.social_proximity = pickle.load(file)
+
+ 
     elapsed_time = time.time() - start_time
     print("Done. Elapsed time:", elapsed_time, "s")
 
-    execution_time = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_test\\execution_time" + ".txt", 'w')
+    execution_time = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\execution_time" + ".txt", 'w')
     execution_time.write(str(elapsed_time))
 
-    rec_list = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_test\\reclist_top_" + str(top_k) + ".txt", 'w')
-    result_5 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_test\\result_top_" + str(5) + ".txt", 'w')
-    result_10 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_test\\result_top_" + str(10) + ".txt", 'w')
-    result_15 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_test\\result_top_" + str(15) + ".txt", 'w')
-    result_20 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_test\\result_top_" + str(20) + ".txt", 'w')
+    rec_list = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\reclist_top_" + str(top_k) + ".txt", 'w')
+    result_5 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\result_top_" + str(5) + ".txt", 'w')
+    result_10 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\result_top_" + str(10) + ".txt", 'w')
+    result_15 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\result_top_" + str(15) + ".txt", 'w')
+    result_20 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\result_top_" + str(20) + ".txt", 'w')
 
     all_uids = list(range(user_num))
     all_lids = list(range(poi_num))
@@ -578,23 +593,23 @@ def main():
         S_predction_cache = np.zeros((user_num, poi_num))
     else:
 
-            with open('PFM_5628_users.npy', 'rb') as f:
+            with open('PFM_50_users.npy', 'rb') as f:
                 PFM_predction_cache = np.load(f)
                 print("max & min for PFM", np.min(PFM_predction_cache), np.max(PFM_predction_cache))
            
-            with open('MGMWT_5628_users.npy', 'rb') as f:
+            with open('MGMWT_50_users.npy', 'rb') as f:
                 MGMWT_predction_cache = np.load(f)
                 print("max & min for MGMWT", np.min(MGMWT_predction_cache), np.max(MGMWT_predction_cache))
             
-            with open('MGMLT_5628_users.npy', 'rb') as f:
+            with open('MGMLT_50_users.npy', 'rb') as f:
                 MGMLT_predction_cache = np.load(f)
                 print("max & min for MGMLT", np.min(MGMLT_predction_cache), np.max(MGMLT_predction_cache))
 
-            with open('TAMF_5628_users.npy', 'rb') as f:
+            with open('TAMF_50_users.npy', 'rb') as f:
                 TAMF_predction_cache = np.load(f)
                 print("max & min for TAMF", np.min(TAMF_predction_cache), np.max(TAMF_predction_cache))
 
-            with open('S_5628_users.npy', 'rb') as f:
+            with open('S_50_users.npy', 'rb') as f:
                 S_predction_cache = np.load(f)
                 print("max & min for S", np.min(S_predction_cache), np.max(S_predction_cache))
 
@@ -667,39 +682,40 @@ def main():
             result_15.write('\t'.join([str(cnt), str(uid), str(precision_15), str(recall_15), str(nDCG_15), str(MAP_15)]) + '\n')
             result_20.write('\t'.join([str(cnt), str(uid), str(precision_20), str(recall_20), str(nDCG_20), str(MAP_20)]) + '\n')
 
-    print("<< GeoTS is Finished >>")
+    print("<< GeoTS is Finished >>") 
 
     if save_predictions:
 
 
-        with open('PFM_5628_users.npy', 'wb') as f:
+        with open('PFM_50_users.npy', 'wb') as f:
             np.save(f, PFM_predction_cache)
 
-        with open('MGMWT_5628_users.npy', 'wb') as f:
+        with open('MGMWT_50_users.npy', 'wb') as f:
             np.save(f, MGMWT_predction_cache)
 
-        with open('MGMLT_5628_users.npy', 'wb') as f:
+        with open('MGMLT_50_users.npy', 'wb') as f:
             np.save(f, MGMLT_predction_cache)
 
-        with open('TAMF_5628_users.npy', 'wb') as f:
+        with open('TAMF_50_users.npy', 'wb') as f:
             np.save(f, TAMF_predction_cache)
 
-        with open('S_5628_users.npy', 'wb') as f:
+        with open('S_50_users.npy', 'wb') as f:
             np.save(f, S_predction_cache)
     
 
 if __name__ == '__main__':
     # data_dir = "/content/drive/MyDrive/STACP_model/Gowalla_dataset"
 
-    size_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_data_size.txt"
-    check_in_file = "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_checkins.txt"
-    train_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_train.txt"
+    size_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_data_size_limited_50_users.txt"
+    check_in_file = "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_checkins_limited_50_users.txt"
+    train_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_train_limited_50_users.txt"
     tune_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_tune.txt"
     test_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_test.txt"
     poi_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_poi_coos.txt"
     social_file = "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_social_relations.txt"
-   
-    save_predictions = True
+
+    
+    save_predictions = False
     user_num, poi_num = open(size_file, 'r').readlines()[0].strip('\n').split()
     user_num, poi_num = int(user_num), int(poi_num)
 
