@@ -444,7 +444,7 @@ def read_poi_coos():
     return poi_coos
 
 
-def read_training_data2():
+def read_training_data_2():
     train_data = open(train_file, 'r').readlines()
     training_matrix = np.zeros((user_num, poi_num))
     for eachline in train_data:
@@ -532,15 +532,14 @@ def read_ground_truth():
 def main():
     sparse_training_matrices, sparse_training_matrix, sparse_training_matrix_WT, sparse_training_matrix_LT, training_tuples = read_training_data()
     ground_truth = read_ground_truth()
-    training_matrix2 = read_training_data2()
+    training_matrix = read_training_data_2()
     poi_coos = read_poi_coos()
     #social_relations = read_friend_data()
     social_matrix = read_friend_data()
 
     start_time = time.time()
-    save_social_proximity = False
 
-  
+    save_social_proximity = False
 
     PFM.train(sparse_training_matrix, max_iters=10, learning_rate=1e-4)
     # Multi-Center Weekday
@@ -552,7 +551,7 @@ def main():
 
     if save_social_proximity:
 
-        S.compute_friend_sim(training_matrix2, social_matrix)
+        S.compute_friend_sim(training_matrix, social_matrix)
         with open('social_proximity.pkl', 'wb') as file:
             pickle.dump(S.social_proximity, file)
 
@@ -564,14 +563,14 @@ def main():
     elapsed_time = time.time() - start_time
     print("Done. Elapsed time:", elapsed_time, "s")
 
-    execution_time = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\execution_time" + ".txt", 'w')
+    execution_time = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\execution_time" + ".txt", 'w')
     execution_time.write(str(elapsed_time))
 
-    rec_list = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\reclist_top_" + str(top_k) + ".txt", 'w')
-    result_5 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\result_top_" + str(5) + ".txt", 'w')
-    result_10 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\result_top_" + str(10) + ".txt", 'w')
-    result_15 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\result_top_" + str(15) + ".txt", 'w')
-    result_20 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 8_save_social_proximity\\result_top_" + str(20) + ".txt", 'w')
+    rec_list = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\reclist_top_" + str(top_k) + ".txt", 'w')
+    result_5 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\result_top_" + str(5) + ".txt", 'w')
+    result_10 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\result_top_" + str(10) + ".txt", 'w')
+    result_15 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\result_top_" + str(15) + ".txt", 'w')
+    result_20 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\result_top_" + str(20) + ".txt", 'w')
 
     all_uids = list(range(user_num))
     all_lids = list(range(poi_num))
