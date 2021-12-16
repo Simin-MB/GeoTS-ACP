@@ -539,7 +539,7 @@ def main():
 
     start_time = time.time()
 
-    save_social_proximity = False
+    save_social_proximity = True
 
     PFM.train(sparse_training_matrix, max_iters=10, learning_rate=1e-4)
     # Multi-Center Weekday
@@ -552,25 +552,25 @@ def main():
     if save_social_proximity:
 
         S.compute_friend_sim(training_matrix, social_matrix)
-        with open('social_proximity.pkl', 'wb') as file:
+        with open('social_proximity_5628_users.pkl', 'wb') as file:
             pickle.dump(S.social_proximity, file)
 
     else:
-        with open('social_proximity.pkl', 'rb') as file:
+        with open('social_proximity_5628_users.pkl', 'rb') as file:
             S.social_proximity = pickle.load(file)
 
  
     elapsed_time = time.time() - start_time
     print("Done. Elapsed time:", elapsed_time, "s")
 
-    execution_time = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\execution_time" + ".txt", 'w')
+    execution_time = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\execution_time" + ".txt", 'w')
     execution_time.write(str(elapsed_time))
 
-    rec_list = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\reclist_top_" + str(top_k) + ".txt", 'w')
-    result_5 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\result_top_" + str(5) + ".txt", 'w')
-    result_10 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\result_top_" + str(10) + ".txt", 'w')
-    result_15 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\result_top_" + str(15) + ".txt", 'w')
-    result_20 = open("C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\MF_social_model\\result_Dec 10_optimal\\result_top_" + str(20) + ".txt", 'w')
+    rec_list = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\reclist_top_" + str(top_k) + ".txt", 'w')
+    result_5 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\result_top_" + str(5) + ".txt", 'w')
+    result_10 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\result_top_" + str(10) + ".txt", 'w')
+    result_15 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\result_top_" + str(15) + ".txt", 'w')
+    result_20 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\result_top_" + str(20) + ".txt", 'w')
 
     all_uids = list(range(user_num))
     all_lids = list(range(poi_num))
@@ -592,23 +592,23 @@ def main():
         S_predction_cache = np.zeros((user_num, poi_num))
     else:
 
-            with open('PFM_50_users.npy', 'rb') as f:
+            with open('PFM_5628_users.npy', 'rb') as f:
                 PFM_predction_cache = np.load(f)
                 print("max & min for PFM", np.min(PFM_predction_cache), np.max(PFM_predction_cache))
            
-            with open('MGMWT_50_users.npy', 'rb') as f:
+            with open('MGMWT_5628_users.npy', 'rb') as f:
                 MGMWT_predction_cache = np.load(f)
                 print("max & min for MGMWT", np.min(MGMWT_predction_cache), np.max(MGMWT_predction_cache))
             
-            with open('MGMLT_50_users.npy', 'rb') as f:
+            with open('MGMLT_5628_users.npy', 'rb') as f:
                 MGMLT_predction_cache = np.load(f)
                 print("max & min for MGMLT", np.min(MGMLT_predction_cache), np.max(MGMLT_predction_cache))
 
-            with open('TAMF_50_users.npy', 'rb') as f:
+            with open('TAMF_5628_users.npy', 'rb') as f:
                 TAMF_predction_cache = np.load(f)
                 print("max & min for TAMF", np.min(TAMF_predction_cache), np.max(TAMF_predction_cache))
 
-            with open('S_50_users.npy', 'rb') as f:
+            with open('S_5628_users.npy', 'rb') as f:
                 S_predction_cache = np.load(f)
                 print("max & min for S", np.min(S_predction_cache), np.max(S_predction_cache))
 
@@ -686,28 +686,28 @@ def main():
     if save_predictions:
 
 
-        with open('PFM_50_users.npy', 'wb') as f:
+        with open('PFM_5628_users.npy', 'wb') as f:
             np.save(f, PFM_predction_cache)
 
-        with open('MGMWT_50_users.npy', 'wb') as f:
+        with open('MGMWT_5628_users.npy', 'wb') as f:
             np.save(f, MGMWT_predction_cache)
 
-        with open('MGMLT_50_users.npy', 'wb') as f:
+        with open('MGMLT_5628_users.npy', 'wb') as f:
             np.save(f, MGMLT_predction_cache)
 
-        with open('TAMF_50_users.npy', 'wb') as f:
+        with open('TAMF_5628_users.npy', 'wb') as f:
             np.save(f, TAMF_predction_cache)
 
-        with open('S_50_users.npy', 'wb') as f:
+        with open('S_5628_users.npy', 'wb') as f:
             np.save(f, S_predction_cache)
     
 
 if __name__ == '__main__':
     # data_dir = "/content/drive/MyDrive/STACP_model/Gowalla_dataset"
 
-    size_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_data_size_limited_50_users.txt"
-    check_in_file = "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_checkins_limited_50_users.txt"
-    train_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_train_limited_50_users.txt"
+    size_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_data_size.txt"
+    check_in_file = "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_checkins.txt"
+    train_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_train.txt"
     tune_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_tune.txt"
     test_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_test.txt"
     poi_file =  "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_poi_coos.txt"
