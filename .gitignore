@@ -1,1 +1,4 @@
-social_proximity.pkl
+*.pkl
+*.txt
+*.csv
+*.npy
