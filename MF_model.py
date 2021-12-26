@@ -444,16 +444,6 @@ def read_poi_coos():
     return poi_coos
 
 
-def read_training_data_2():
-    train_data = open(train_file, 'r').readlines()
-    training_matrix = np.zeros((user_num, poi_num))
-    for eachline in train_data:
-        uid, lid, freq = eachline.strip().split()
-        uid, lid, freq = int(uid), int(lid), int(freq)
-        training_matrix[uid, lid] = freq
-    return training_matrix
-
-
 def read_training_data():
     # load train data
     train_data = open(train_file, 'r').readlines()
@@ -464,19 +454,7 @@ def read_training_data():
         uid, lid, freq = eachline.strip().split()
         uid, lid, freq = int(uid), int(lid), int(freq)
         sparse_training_matrix[uid, lid] = freq
-        training_matrix[uid, lid] = 1.0
-        training_tuples.add((uid, lid))
-
-
-def read_training_data():
-    # load train data
-    train_data = open(train_file, 'r').readlines()
-    sparse_training_matrix = sparse.dok_matrix((user_num, poi_num))
-    training_tuples = set()
-    for eachline in train_data:
-        uid, lid, freq = eachline.strip().split()
-        uid, lid, freq = int(uid), int(lid), int(freq)
-        sparse_training_matrix[uid, lid] = freq
+        training_matrix[uid, lid] = 1
         training_tuples.add((uid, lid))
 
     # load checkins
@@ -532,11 +510,9 @@ def read_ground_truth():
 def main():
     sparse_training_matrices, sparse_training_matrix, sparse_training_matrix_WT, sparse_training_matrix_LT, training_tuples = read_training_data()
     ground_truth = read_ground_truth()
-    training_matrix = read_training_data_2()
     poi_coos = read_poi_coos()
     #social_relations = read_friend_data()
     social_matrix = read_friend_data()
-
     start_time = time.time()
 
     save_social_proximity = True
@@ -552,7 +528,7 @@ def main():
     if save_social_proximity:
 
         S.compute_friend_sim(training_matrix, social_matrix)
-        with open('social_proximity_5628_users.pkl', 'wb') as file:
+        with open('social_proximity_80_percent_less_train.pkl', 'wb') as file:
             pickle.dump(S.social_proximity, file)
 
     else:
@@ -563,14 +539,14 @@ def main():
     elapsed_time = time.time() - start_time
     print("Done. Elapsed time:", elapsed_time, "s")
 
-    execution_time = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\execution_time" + ".txt", 'w')
+    execution_time = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\reduced_80_percent_train_data\\execution_time" + ".txt", 'w')
     execution_time.write(str(elapsed_time))
 
-    rec_list = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\reclist_top_" + str(top_k) + ".txt", 'w')
-    result_5 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\result_top_" + str(5) + ".txt", 'w')
-    result_10 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\result_top_" + str(10) + ".txt", 'w')
-    result_15 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\result_top_" + str(15) + ".txt", 'w')
-    result_20 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\result_5628_users_10_30_iter\\result_top_" + str(20) + ".txt", 'w')
+    rec_list = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\reduced_80_percent_train_data\\reclist_top_" + str(top_k) + ".txt", 'w')
+    result_5 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\reduced_80_percent_train_data\\result_top_" + str(5) + ".txt", 'w')
+    result_10 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\reduced_80_percent_train_data\\result_top_" + str(10) + ".txt", 'w')
+    result_15 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\reduced_80_percent_train_data\\result_top_" + str(15) + ".txt", 'w')
+    result_20 = open("C:\\Users\\simin\\GithubRepo\\GeoTS-ACP\\reduced_80_percent_train_data\\result_top_" + str(20) + ".txt", 'w')
 
     all_uids = list(range(user_num))
     all_lids = list(range(poi_num))
@@ -615,7 +591,7 @@ def main():
 
     for cnt, uid in enumerate(all_uids):
         if uid in ground_truth:
-          
+           
            # What is the meaning of the following structure?
             # overall_scores = [PFM.predict(uid, lid) * (MGMWT.predict(uid, lid) + MGMLT.predict(uid, lid))
             #                  * TAMF.predict(uid, lid) * S.predict(uid, lid)
@@ -686,19 +662,19 @@ def main():
     if save_predictions:
 
 
-        with open('PFM_5628_users.npy', 'wb') as f:
+        with open('PFM_80_percent_less_train.npy', 'wb') as f:
             np.save(f, PFM_predction_cache)
 
-        with open('MGMWT_5628_users.npy', 'wb') as f:
+        with open('MGMWT_80_percent_less_train.npy', 'wb') as f:
             np.save(f, MGMWT_predction_cache)
 
-        with open('MGMLT_5628_users.npy', 'wb') as f:
+        with open('MGMLT_80_percent_less_train.npy', 'wb') as f:
             np.save(f, MGMLT_predction_cache)
 
-        with open('TAMF_5628_users.npy', 'wb') as f:
+        with open('TAMF_80_percent_less_train.npy', 'wb') as f:
             np.save(f, TAMF_predction_cache)
 
-        with open('S_5628_users.npy', 'wb') as f:
+        with open('S_80_percent_less_train.npy', 'wb') as f:
             np.save(f, S_predction_cache)
     
 
@@ -714,7 +690,7 @@ if __name__ == '__main__':
     social_file = "C:\\Users\\simin\\Documents\\Thesis\\M.Sc. Thesis\\gowalla_dataset_STACP\\Gowalla_social_relations.txt"
 
     
-    save_predictions = False
+    save_predictions = True
     user_num, poi_num = open(size_file, 'r').readlines()[0].strip('\n').split()
     user_num, poi_num = int(user_num), int(poi_num)
 
